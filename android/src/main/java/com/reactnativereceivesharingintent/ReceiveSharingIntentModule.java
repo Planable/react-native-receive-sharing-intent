@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 
-
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 import com.facebook.react.bridge.Promise;
@@ -18,6 +17,7 @@ public class ReceiveSharingIntentModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
   private ReceiveSharingIntentHelper receiveSharingIntentHelper;
+  private Intent oldIntent;
 
   public ReceiveSharingIntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -30,6 +30,7 @@ public class ReceiveSharingIntentModule extends ReactContextBaseJavaModule {
   protected void onNewIntent(Intent intent) {
     Activity mActivity = getCurrentActivity();
     if(mActivity == null) { return; }
+    oldIntent = mActivity.getIntent();
     mActivity.setIntent(intent);
   }
 
@@ -40,7 +41,10 @@ public class ReceiveSharingIntentModule extends ReactContextBaseJavaModule {
     if(mActivity == null) { return; }
     Intent intent = mActivity.getIntent();
     receiveSharingIntentHelper.sendFileNames(reactContext, intent, promise);
-    mActivity.setIntent(null);
+    // PR fix https://github.com/ajith-ab/react-native-receive-sharing-intent/issues/110
+    if (oldIntent != null) {
+      mActivity.setIntent(oldIntent); 
+    }
   }
 
   @ReactMethod

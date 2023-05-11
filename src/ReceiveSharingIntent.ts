@@ -33,7 +33,8 @@ class ReceiveSharingIntentModule implements IReceiveSharingIntent {
     }
 
     clearReceivedFiles(){
-        this.isClear = true;
+        // FIX https://github.com/ajith-ab/react-native-receive-sharing-intent/issues/110
+        ReceiveSharingIntent.clearFileNames();
     }
 
     
